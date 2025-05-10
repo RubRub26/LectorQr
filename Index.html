@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Kavak</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script> <!-- jsQR library -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css" rel="stylesheet"> <!-- Iconos -->
+</head>
+<body>
+
+<header>
+  <img src="https://www.kavak.com/assets/svg/kavak-xs.svg" alt="Kavak Logo" class="logo">
+  <button id="theme-toggle" class="theme-toggle-btn">
+    <i class="fa fa-moon"></i> Modo Oscuro
+  </button>
+</header>
+
+<main>
+  <h1>Escanear Código QR</h1>
+  <p>Arrastra y suelta un archivo de imagen QR o selecciona uno desde tu dispositivo.</p>
+
+  <!-- Zona para arrastrar y soltar -->
+  <div class="drop-zone" id="drop-zone">
+    <p>Arrastra y suelta tu imagen QR aquí o haz clic para elegir un archivo</p>
+    <input type="file" id="file-input" accept="image/*" style="display: none;">
+  </div>
+
+  <!-- Resultado de escaneo -->
+  <div id="output"></div>
+
+  <footer>
+    <p>Creado por <a href="https://www.instagram.com/rub" target="_blank">@Rub</a></p> <br>
+   <p>Todos los derechos reservados <a href="https://www.kavak.com/" target="_blank">Kavak</a></p>
+  </footer>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
