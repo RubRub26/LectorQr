@@ -1,22 +1,18 @@
 // ======= TEMA OSCURO / CLARO =======
 
-// Obtener elementos
 const themeToggleBtn = document.getElementById("theme-toggle");
 const themeIcon = themeToggleBtn.querySelector("i");
 const body = document.body;
 
-// Leer el tema guardado o poner 'light' por defecto
 const savedTheme = localStorage.getItem("theme") || "light";
 setTheme(savedTheme);
 
-// Cambiar tema al hacer clic
 themeToggleBtn.addEventListener("click", function() {
   const currentTheme = body.getAttribute("data-theme") === "dark" ? "light" : "dark";
   setTheme(currentTheme);
   localStorage.setItem("theme", currentTheme);
 });
 
-// Función para aplicar tema e icono
 function setTheme(theme) {
   body.setAttribute("data-theme", theme);
   if (theme === "dark") {
@@ -27,7 +23,14 @@ function setTheme(theme) {
     themeIcon.classList.add("fa-moon");
   }
 }
-// ======= LECTOR DE QR MEJORADO =======
+
+// ======= LECTOR DE QR =======
+
+const dropZone = document.getElementById("drop-zone");
+const fileInput = document.getElementById("file-input");
+const output = document.getElementById("output");
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext("2d");
 
 fileInput.addEventListener("change", function(event) {
   const file = event.target.files[0];
@@ -41,22 +44,26 @@ fileInput.addEventListener("change", function(event) {
         ctx.drawImage(img, 0, 0);
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
         if (qrCode) {
-          const isLink = qrCode.data.startsWith("http://") || qrCode.data.startsWith("https://");
+          const qrText = qrCode.data.trim();
+          const isLink = qrText.startsWith("http://") || qrText.startsWith("https://");
+
           if (isLink) {
             output.innerHTML = `
               <p>Enlace detectado:</p>
-              <a href="${qrCode.data}" target="_blank">${qrCode.data}</a>
+              <a href="${qrText}" target="_blank">${qrText}</a>
             `;
           } else {
             output.innerHTML = `
               <p>Texto detectado:</p>
-              <div style="margin-top:10px; word-wrap: break-word; color: var(--text-color);">${qrCode.data}</div>
-              <button onclick="copyText('${escapeQuotes(qrCode.data)}')" class="copy-btn">
+              <div style="margin-top:10px; word-wrap: break-word; color: var(--text-color);">${qrText}</div>
+              <button onclick="copyText(\`${escapeQuotes(qrText)}\`)" class="copy-btn" style="margin-top:10px; cursor:pointer;">
                 <i class="fa fa-copy"></i> Copiar Texto
               </button>
             `;
           }
+
         } else {
           output.innerHTML = "QR ilegible o no detectado.";
         }
@@ -67,19 +74,20 @@ fileInput.addEventListener("change", function(event) {
   }
 });
 
-// ======= BOTÓN DE COPIAR =======
+dropZone.addEventListener("click", function() {
+  fileInput.click();
+});
+
+// ======= FUNCIÓN COPIAR TEXTO =======
 
 function copyText(text) {
   navigator.clipboard.writeText(text)
-    .then(() => {
-      alert("Texto copiado al portapapeles");
-    })
-    .catch(err => {
-      alert("No se pudo copiar el texto");
-    });
+    .then(() => alert("Texto copiado al portapapeles"))
+    .catch(() => alert("No se pudo copiar el texto"));
 }
+
+// ======= FUNCIÓN PARA ESCAPAR COMILLAS =======
 
 function escapeQuotes(str) {
-  return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+  return str.replace(/`/g, '\\`').replace(/\\/g, '\\\\');
 }
-
