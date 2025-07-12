@@ -27,14 +27,7 @@ function setTheme(theme) {
     themeIcon.classList.add("fa-moon");
   }
 }
-
-// ======= LECTOR DE QR =======
-
-const dropZone = document.getElementById("drop-zone");
-const fileInput = document.getElementById("file-input");
-const output = document.getElementById("output");
-const canvas = document.createElement('canvas');
-const ctx = canvas.getContext("2d");
+// ======= LECTOR DE QR MEJORADO =======
 
 fileInput.addEventListener("change", function(event) {
   const file = event.target.files[0];
@@ -49,8 +42,21 @@ fileInput.addEventListener("change", function(event) {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
         if (qrCode) {
-          const dataType = qrCode.data.startsWith("http") ? "Enlace detectado" : "Texto detectado";
-          output.innerHTML = `${dataType}: <a href="${qrCode.data}" target="_blank">${qrCode.data}</a>`;
+          const isLink = qrCode.data.startsWith("http://") || qrCode.data.startsWith("https://");
+          if (isLink) {
+            output.innerHTML = `
+              <p>Enlace detectado:</p>
+              <a href="${qrCode.data}" target="_blank">${qrCode.data}</a>
+            `;
+          } else {
+            output.innerHTML = `
+              <p>Texto detectado:</p>
+              <div style="margin-top:10px; word-wrap: break-word; color: var(--text-color);">${qrCode.data}</div>
+              <button onclick="copyText('${escapeQuotes(qrCode.data)}')" class="copy-btn">
+                <i class="fa fa-copy"></i> Copiar Texto
+              </button>
+            `;
+          }
         } else {
           output.innerHTML = "QR ilegible o no detectado.";
         }
@@ -61,6 +67,19 @@ fileInput.addEventListener("change", function(event) {
   }
 });
 
-dropZone.addEventListener("click", function() {
-  fileInput.click();
-});
+// ======= BOTÓN DE COPIAR =======
+
+function copyText(text) {
+  navigator.clipboard.writeText(text)
+    .then(() => {
+      alert("Texto copiado al portapapeles");
+    })
+    .catch(err => {
+      alert("No se pudo copiar el texto");
+    });
+}
+
+function escapeQuotes(str) {
+  return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+}
+
